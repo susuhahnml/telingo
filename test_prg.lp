@@ -2,4 +2,4 @@
 #program always.
 {a}.
 #program initial.
-:- not &tel{ >? a}.
+:- not &tel{ >* a}.

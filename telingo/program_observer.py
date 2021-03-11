@@ -21,6 +21,8 @@ class Observer:
         self.prg_map.update({s.literal: str(s) for s in prg.theory_atoms})
 
     def get_prop(self, l):
+        if l in self.externals:
+            return "e_{}".format(l)
         s = self.prg_map[l]
         if s[0] == '(' or s[0] == '&':
             return "l_{}".format(l)
@@ -33,18 +35,11 @@ class Observer:
                 m += "% l_{} := {}\n".format(k, v)
         return m
 
+    def is_theory_atom(self, l):
+        return l in self.prg_map and self.prg_map[l][0] == "&"
+
     def get_clingo_program(self, false_literal=None):
         prg = "\n% *******************  RULES\n"
-        for k, v in self.externals.items():
-            if "free" in str(v).lower():
-                self.externals[k] = "free"
-            elif "release" in str(v).lower():
-                self.externals[k] = "release"
-            elif "true" in str(v).lower():
-                self.externals[k] = "#true"
-            elif "false" in str(v).lower():
-                self.externals[k] = "#false"
-        self.prg_map.update(self.externals)
         self.prg_map[false_literal] = "#false"
 
         lit_with_added_choice = []
@@ -70,7 +65,7 @@ class Observer:
                     body_lits.append("not " + p)
 
                     # Add choice for theory in :- not &t
-                    if self.prg_map[-l][0] == "&" and not -l in lit_with_added_choice:
+                    if self.is_theory_atom(-l) and not -l in lit_with_added_choice:
                         prg += "{}{}{}. % Choice for theory added manually\n".format(
                             '{', self.get_prop(-l), '}')
                         lit_with_added_choice.append(-l)
@@ -81,11 +76,21 @@ class Observer:
             impl = ":- "if len(rule[2]) != 0 else ""
             prg += "{}{}{}{}{}.\n".format(bracket_l,
                                           head, bracket_r, impl, ", ".join(body_lits))
+        prg += "% ******************* ASSUMED\n"
         for l in self.assumeed_lit:
             if l > 0:
                 prg += "{}.".format(self.get_prop(l))
             elif l < 0:
                 prg += ":- {}.".format(self.get_prop(-1*l))
+        prg += "% ******************* EXTERNALS\n"
+        for k, v in self.externals.items():
+            if "release" in str(v).lower():
+                continue
+            prg += "{}{}{}.\n".format("{",self.get_prop(k),"}")
+            if "true" in str(v).lower():
+                prg += "{}.\n".format(self.get_prop(k))
+            elif "false" in str(v).lower():
+                prg += ":-{}.\n".format(self.get_prop(k))
         prg += "% ******************* AUX LITERALS\n"
         prg += self.get_map()
         return prg
