@@ -158,5 +158,5 @@ if __name__ == "__main__":
         f = open(fn, 'r')
         program += f.read()
         f.close()
-    horizon = int(sys.argv[1])
+    horizon = int(sys.argv[1]) + 1
     solve(program, imin=horizon, out_file=sys.argv[2], imax=horizon, istop="UNKNOWN")

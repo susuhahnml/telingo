@@ -81,8 +81,8 @@ def imain(prg, future_sigs, program_parts, on_model, imin=0, imax=None, istop="S
                     assumptions.append(-atom.literal)
         if out_file is not None:
             observer.prg_update(prg)
-        ret = prg.solve(on_model=lambda m: on_model(
-            m, step), assumptions=assumptions)
+        # ret = prg.solve(on_model=lambda m: on_model(
+        #     m, step), assumptions=assumptions)
         step = step+1
 
     # Save program on last step
@@ -90,7 +90,7 @@ def imain(prg, future_sigs, program_parts, on_model, imin=0, imax=None, istop="S
         clingo_prg = observer.get_clingo_program(
             getattr(f, '_Theory__false_literal'))
         f = open(out_file, 'w')
-        f.write("% {} (Setp {}) \n{}".format(ret, step, clingo_prg))
+        f.write("% (Setp {}) \n{}".format(step, clingo_prg))
         f.close()
 
 
