@@ -153,10 +153,39 @@ global observer
 observer = Observer()
 
 if __name__ == "__main__":
-    program = ""
-    for fn in sys.argv[3:]:
+    parser = argparse.ArgumentParser(description='Obsverve the resulting program')
+    parser.add_argument('--choices-file', type=str,
+                        help='Path constraint')
+    parser.add_argument('--constraint-file', type=str, 
+                        help='Path constraint')
+    parser.add_argument('--instance-file', type=str, 
+                        help='Path instance')
+    parser.add_argument('--out-file', type=str, 
+                        help='Path out')
+    parser.add_argument('--extra-files', type=str, 
+                        help='Path for extra files')
+    parser.add_argument('--h', type=int, 
+                        help='Horizon')
+
+    args = parser.parse_args()
+
+    program = "#program always.\n"
+    f = open(args.choices_file, 'r')
+    program += f.read()
+    f.close()
+    f = open(args.instance_file, 'r')
+    program += f.read()
+    f.close()
+    for fn in args.extra_files.split(' '):
+        if fn=='':
+            continue
         f = open(fn, 'r')
         program += f.read()
         f.close()
-    horizon = int(sys.argv[1]) + 1
-    solve(program, imin=horizon, out_file=sys.argv[2], imax=horizon, istop="UNKNOWN")
+    program += "#program initial.\n"
+    f = open(args.constraint_file, 'r')
+    program += f.read()
+    f.close()
+    program = program.replace("#program base.","")
+    solve(program, imin=args.h, out_file=args.out_file, imax=args.h, istop="UNKNOWN")
+

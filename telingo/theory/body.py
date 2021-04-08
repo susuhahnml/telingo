@@ -849,7 +849,7 @@ def create_path(rep, add_formula, check):
             if check:
                 raise RuntimeError("invalid dynamic formula: {}".format(rep))
             if rep.name == "?":
-                arg = create_path(args[0], add_formula, True)
+                arg = create_dynamic_formula(args[0], add_formula)
                 return add_formula(CheckPath(arg))
             else:
                 assert(rep.name == "*")
