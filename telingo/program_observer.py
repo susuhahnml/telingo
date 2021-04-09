@@ -6,7 +6,7 @@ import clingo
 import telingo
 import telingo.transformers as transformers
 from telingo.tests.telingo_test import solve
-
+import argparse
 
 class Observer:
     def __init__(self):
@@ -168,6 +168,7 @@ if __name__ == "__main__":
                         help='Horizon')
 
     args = parser.parse_args()
+    horizon = int(args.h) + 1
 
     program = "#program always.\n"
     f = open(args.choices_file, 'r')
@@ -187,5 +188,5 @@ if __name__ == "__main__":
     program += f.read()
     f.close()
     program = program.replace("#program base.","")
-    solve(program, imin=args.h, out_file=args.out_file, imax=args.h, istop="UNKNOWN")
+    solve(program, imin=horizon, out_file=args.out_file, imax=horizon, istop="UNKNOWN")
 
