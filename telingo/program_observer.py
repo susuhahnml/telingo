@@ -71,8 +71,11 @@ class Observer:
                         lit_with_added_choice.append(-l)
             is_choice_on_prop = rule[0] and len(
                 rule[1]) == 1 and head[:2] != "l_"
-            if is_choice_on_prop or false_body:
-                prg += "%"
+            is_other_fact = len(rule[1]) == 1 and len(rule[2])  == 0 and not rule[0]
+            if is_choice_on_prop or false_body or is_other_fact:
+                continue
+                # prg += "%"
+
             impl = ":- "if len(rule[2]) != 0 else ""
             prg += "{}{}{}{}{}.\n".format(bracket_l,
                                           head, bracket_r, impl, ", ".join(body_lits))
@@ -183,7 +186,8 @@ if __name__ == "__main__":
         f = open(fn, 'r')
         program += f.read()
         f.close()
-    program += "#program initial.\n"
+    program += "\n\n#program initial.\n"
+    
     f = open(args.constraint_file, 'r')
     program += f.read()
     f.close()
