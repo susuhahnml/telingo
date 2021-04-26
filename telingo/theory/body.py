@@ -866,10 +866,6 @@ def create_path(rep, add_formula, check):
                     raise RuntimeError("unknown identifier: {}".format(rep))
             else:
                 raise RuntimeError("invalid dynamic formula: {}".format(rep))
-        elif rep.name == "~":
-            arg = rep.arguments[0]
-            arg_f = create_dynamic_formula(arg, add_formula)
-            return add_formula(Negation(arg_f))
         # this case is probably impossible
         else:
             return create_atom(rep, add_formula, True)
@@ -910,6 +906,10 @@ def create_dynamic_formula(rep, add_formula):
                     raise RuntimeError("unknown identifier: {}".format(rep))
             else:
                 raise RuntimeError("invalid dynamic formula: {}".format(rep))
+        elif rep.name == "~":
+            arg = rep.arguments[0]
+            arg_f = create_dynamic_formula(arg, add_formula)
+            return add_formula(Negation(arg_f))
         elif rep.name in g_all_operators:
             raise RuntimeError("invalid dynamic formula: {}".format(rep))
         else:
