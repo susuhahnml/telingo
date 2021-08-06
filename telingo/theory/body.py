@@ -858,7 +858,7 @@ def create_path(rep, add_formula, check):
         elif rep.name == "&":
             arg = rep.arguments[0]
             if arg.type == _clingo.TheoryTermType.Symbol:
-                if not check and arg.name == "true":
+                if not check and arg.name == "t":
                     return add_formula(SkipPath())
                 if check and arg.name == "true" or arg.name == "false":
                     return add_formula(BooleanConstant(arg.name == "true"))

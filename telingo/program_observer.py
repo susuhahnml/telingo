@@ -72,11 +72,11 @@ class Observer:
             is_choice_on_prop = rule[0] and len(
                 rule[1]) == 1 and head[:2] != "l_"
             is_other_fact = len(rule[1]) == 1 and len(rule[2])  == 0 and not rule[0]
-            if is_choice_on_prop or false_body or is_other_fact:
+            if is_choice_on_prop or is_other_fact:
                 continue
                 # prg += "%"
 
-            impl = ":- "if len(rule[2]) != 0 else ""
+            impl = ":- "if len(body_lits) != 0 else ""
             prg += "{}{}{}{}{}.\n".format(bracket_l,
                                           head, bracket_r, impl, ", ".join(body_lits))
         prg += "% ******************* ASSUMED\n"
